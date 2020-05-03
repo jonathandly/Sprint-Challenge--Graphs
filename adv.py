@@ -29,7 +29,36 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+def starting_position(dir):
+    opposites = {'n':'s','e':'w','s':'n','w':'e'}
+    return opposites[dir]
 
+def depth_first(current_room):
+    visited = set()
+    path = []
+
+    def depth_first_recursive(current_room, previous_dir=None):
+        visited.add(current_room.id)
+
+        for exit in current_room.get_exits():
+            next_room = current_room.get_room_in_direction(exit)
+
+            if next_room.id in visited:
+                continue
+            else:
+                visited.add(next_room.id)
+                path.append(exit)
+
+            depth_first_recursive(current_room.get_room_in_direction(exit), previous_dir=exit)
+        
+        if previous_dir is not None:
+            original = starting_position(previous_dir)
+            path.append(original)
+    
+    depth_first_recursive(current_room)
+    return path
+
+traversal_path = depth_first(world.starting_room)
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
